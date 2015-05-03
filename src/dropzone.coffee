@@ -1017,7 +1017,7 @@ class Dropzone extends Emitter
       canvas.height = resizeInfo.trgHeight
 
       # This is a bugfix for iOS' scaling bug.
-      drawImageIOSFix ctx, img, resizeInfo.srcX ? 0, resizeInfo.srcY ? 0, resizeInfo.srcWidth, resizeInfo.srcHeight, resizeInfo.trgX ? 0, resizeInfo.trgY ? 0, resizeInfo.trgWidth, resizeInfo.trgHeight
+      drawImageMaven ctx, img, resizeInfo.srcX ? 0, resizeInfo.srcY ? 0, resizeInfo.srcWidth, resizeInfo.srcHeight, resizeInfo.trgX ? 0, resizeInfo.trgY ? 0, resizeInfo.trgWidth, resizeInfo.trgHeight
 
       thumbnail = canvas.toDataURL "image/png"
 
@@ -1498,6 +1498,14 @@ detectVerticalSquash = (img) ->
 drawImageIOSFix = (ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) ->
   vertSquashRatio = detectVerticalSquash img
   ctx.drawImage img, sx, sy, sw, sh, dx, dy, dw, dh / vertSquashRatio
+
+
+
+# A replacement for context.drawImage
+# (args are for source and destination).
+drawImageMaven = (ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) ->
+  # vertSquashRatio = detectVerticalSquash img
+  ctx.drawImage img, sx, sy, sw, sh, dx, dy, dw, dh
 
 
 
