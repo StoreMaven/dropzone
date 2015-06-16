@@ -179,6 +179,7 @@
         return this.element.appendChild(this.getFallbackForm());
       },
       resize: function(file) {
+        console.log('dropzoneLibrary:resize resize' );
         var info, srcRatio, trgRatio;
         info = {
           srcX: 0,
@@ -198,13 +199,21 @@
           info.optHeight = (1 / srcRatio) * info.optWidth;
         }
         trgRatio = info.optWidth / info.optHeight;
+        console.log('ddropzone resize', trgRatio, srcRatio );
         if (file.height < info.optHeight || file.width < info.optWidth) {
           info.trgHeight = info.srcHeight;
           info.trgWidth = info.srcWidth;
         } else {
           if (srcRatio > trgRatio) {
-            info.srcHeight = file.height;
-            info.srcWidth = info.srcHeight * trgRatio;
+
+            //no croping
+            if( srcRatio > 1 ){
+              info.srcWidth = file.width;
+              info.srcHeight = info.srcWidth * trgRatio;
+            }else{
+              info.srcHeight = file.height;
+              info.srcWidth = info.srcHeight * trgRatio;
+            }
           } else {
             info.srcWidth = file.width;
             info.srcHeight = info.srcWidth / trgRatio;
@@ -224,6 +233,7 @@
       and don't overwrite those options.
        */
       drop: function(e) {
+        console.log('dropzoneLibrary:drop' );
         return this.element.classList.remove("dz-drag-hover");
       },
       dragstart: noop,
@@ -244,6 +254,7 @@
         return this.element.classList.remove("dz-started");
       },
       addedfile: function(file) {
+        console.log('dropzoneLibrary:addedfile' );
         var node, removeFileEvent, removeLink, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
         if (this.element === this.previewsContainer) {
           this.element.classList.add("dz-started");
@@ -295,6 +306,7 @@
         }
       },
       removedfile: function(file) {
+        console.log('dropzoneLibrary:removedfile' );
         var _ref;
         if (file.previewElement) {
           if ((_ref = file.previewElement) != null) {
@@ -304,6 +316,7 @@
         return this._updateMaxFilesReachedClass();
       },
       thumbnail: function(file, dataUrl) {
+        console.log('dropzoneLibrary:thumbnail' );
         var thumbnailElement, _i, _len, _ref;
         if (file.previewElement) {
           file.previewElement.classList.remove("dz-file-preview");
@@ -321,6 +334,7 @@
         }
       },
       error: function(file, message) {
+        console.log('dropzoneLibrary:error' );
         var node, _i, _len, _ref, _results;
         if (file.previewElement) {
           file.previewElement.classList.add("dz-error");
@@ -338,6 +352,7 @@
       },
       errormultiple: noop,
       processing: function(file) {
+        console.log('dropzoneLibrary:processing' );
         if (file.previewElement) {
           file.previewElement.classList.add("dz-processing");
           if (file._removeLink) {
@@ -347,6 +362,7 @@
       },
       processingmultiple: noop,
       uploadprogress: function(file, progress, bytesSent) {
+        console.log('dropzoneLibrary:uploadprogress' );
         var node, _i, _len, _ref, _results;
         if (file.previewElement) {
           _ref = file.previewElement.querySelectorAll("[data-dz-uploadprogress]");
@@ -366,16 +382,19 @@
       sending: noop,
       sendingmultiple: noop,
       success: function(file) {
+        console.log('dropzoneLibrary:success' );
         if (file.previewElement) {
           return file.previewElement.classList.add("dz-success");
         }
       },
       successmultiple: noop,
       canceled: function(file) {
+        console.log('dropzoneLibrary:canceled' );
         return this.emit("error", file, "Upload canceled.");
       },
       canceledmultiple: noop,
       complete: function(file) {
+        console.log('dropzoneLibrary:complete' );
         if (file._removeLink) {
           file._removeLink.textContent = this.options.dictRemoveFile;
         }
@@ -582,21 +601,25 @@
         this.on(eventName, this.options[eventName]);
       }
       this.on("uploadprogress", (function(_this) {
+        console.log('dropzoneLibrary:uploadprogress' );
         return function() {
           return _this.updateTotalUploadProgress();
         };
       })(this));
       this.on("removedfile", (function(_this) {
+        console.log('dropzoneLibrary:removedfile' );
         return function() {
           return _this.updateTotalUploadProgress();
         };
       })(this));
       this.on("canceled", (function(_this) {
+        console.log('dropzoneLibrary:canceled' );
         return function(file) {
           return _this.emit("complete", file);
         };
       })(this));
       this.on("complete", (function(_this) {
+        console.log('dropzoneLibrary:complete' );
         return function(file) {
           if (_this.getAddedFiles().length === 0 && _this.getUploadingFiles().length === 0 && _this.getQueuedFiles().length === 0) {
             return setTimeout((function() {
@@ -847,6 +870,7 @@
     };
 
     Dropzone.prototype.drop = function(e) {
+      console.log('dropzoneLibrary:drop' );
       var files, items;
       if (!e.dataTransfer) {
         return;
@@ -865,6 +889,7 @@
     };
 
     Dropzone.prototype.paste = function(e) {
+      console.log('dropzoneLibrary:paste' );
       var items, _ref;
       if ((e != null ? (_ref = e.clipboardData) != null ? _ref.items : void 0 : void 0) == null) {
         return;
@@ -877,6 +902,7 @@
     };
 
     Dropzone.prototype.handleFiles = function(files) {
+      console.log('dropzoneLibrary:handleFiles' );
       var file, _i, _len, _results;
       _results = [];
       for (_i = 0, _len = files.length; _i < _len; _i++) {
@@ -887,6 +913,7 @@
     };
 
     Dropzone.prototype._addFilesFromItems = function(items) {
+      console.log('dropzoneLibrary:_addFilesFromItems' );
       var entry, item, _i, _len, _results;
       _results = [];
       for (_i = 0, _len = items.length; _i < _len; _i++) {
@@ -913,6 +940,7 @@
     };
 
     Dropzone.prototype._addFilesFromDirectory = function(directory, path) {
+      console.log('dropzoneLibrary:_addFilesFromDirectory' );
       var dirReader, entriesReader;
       dirReader = directory.createReader();
       entriesReader = (function(_this) {
@@ -940,6 +968,7 @@
     };
 
     Dropzone.prototype.accept = function(file, done) {
+      console.log('dropzoneLibrary:accept' );
       if (file.size > this.options.maxFilesize * 1024 * 1024) {
         return done(this.options.dictFileTooBig.replace("{{filesize}}", Math.round(file.size / 1024 / 10.24) / 100).replace("{{maxFilesize}}", this.options.maxFilesize));
       } else if (!Dropzone.isValidFile(file, this.options.acceptedFiles)) {
@@ -953,6 +982,7 @@
     };
 
     Dropzone.prototype.addFile = function(file) {
+      console.log('dropzoneLibrary:addFile' );
       file.upload = {
         progress: 0,
         total: file.size,
@@ -979,6 +1009,7 @@
     };
 
     Dropzone.prototype.enqueueFiles = function(files) {
+      console.log('dropzoneLibrary:enqueueFiles' );
       var file, _i, _len;
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
@@ -988,6 +1019,7 @@
     };
 
     Dropzone.prototype.enqueueFile = function(file) {
+      console.log('dropzoneLibrary:enqueueFile' );
       if (file.status === Dropzone.ADDED && file.accepted === true) {
         file.status = Dropzone.QUEUED;
         if (this.options.autoProcessQueue) {
@@ -1031,6 +1063,7 @@
     };
 
     Dropzone.prototype.removeFile = function(file) {
+      console.log('dropzoneLibrary:removeFile' );
       if (file.status === Dropzone.UPLOADING) {
         this.cancelUpload(file);
       }
@@ -1042,6 +1075,7 @@
     };
 
     Dropzone.prototype.removeAllFiles = function(cancelIfNecessary) {
+      console.log('dropzoneLibrary:removeAllFiles' );
       var file, _i, _len, _ref;
       if (cancelIfNecessary == null) {
         cancelIfNecessary = false;
