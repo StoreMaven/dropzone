@@ -199,7 +199,7 @@
           info.optHeight = (1 / srcRatio) * info.optWidth;
         }
         trgRatio = info.optWidth / info.optHeight;
-        console.log('ddropzone resize', trgRatio, srcRatio );
+        console.log('ddropzone resize', trgRatio, srcRatio, info, this.options );
         if (file.height < info.optHeight || file.width < info.optWidth) {
           info.trgHeight = info.srcHeight;
           info.trgWidth = info.srcWidth;
@@ -431,9 +431,13 @@
       this.clickableElements = [];
       this.listeners = [];
       this.files = [];
+
       if (typeof this.element === "string") {
         this.element = document.querySelector(this.element);
       }
+
+      console.log( 'Dropzone init', this.element );
+
       if (!(this.element && (this.element.nodeType != null))) {
         throw new Error("Invalid dropzone element.");
       }
@@ -1171,7 +1175,7 @@
     };
 
     Dropzone.prototype.processFiles = function(files) {
-      var file, _i, _len;
+      var file, _i, _len, self = this;
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
         file.processing = true;
@@ -1181,7 +1185,19 @@
       if (this.options.uploadMultiple) {
         this.emit("processingmultiple", files);
       }
-      return this.uploadFiles(files);
+
+      console.log( 'mavenVideoUpload::resolve upload url processFiles' );
+      url = resolveOption(this.options.url, files);
+
+      if( typeof url.then === 'function'){
+        url.then( function(){
+          self.uploadFiles(files);
+        } );
+
+        return;
+      }else{
+        return this.uploadFiles(files);
+      }
     };
 
     Dropzone.prototype._getFilesWithXhr = function(xhr) {
@@ -1238,7 +1254,12 @@
     };
 
     Dropzone.prototype.uploadFile = function(file) {
+      console.log( 'mavenVideoUpload::resolve upload url uploadFile' );
       return this.uploadFiles([file]);
+    };
+
+    Dropzone.prototype.updateParams = function(newParams) {
+      this.options.params = extend({}, this.options.params, newParams != null ? newParams : {});
     };
 
     Dropzone.prototype.uploadFiles = function(files) {
@@ -1250,6 +1271,7 @@
       }
       method = resolveOption(this.options.method, files);
       url = resolveOption(this.options.url, files);
+
       xhr.open(method, url, true);
       xhr.withCredentials = !!this.options.withCredentials;
       response = null;
@@ -1702,7 +1724,8 @@
   };
 
   drawImageMaven = function(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
-    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+    console.log( 'dropzoneLibrary:drawImageMavennn', img, Math.round(sx), Math.round(sy), Math.round(sw), Math.round(sh), Math.round(dx), Math.round(dy), Math.round(dw), Math.round(dh) );
+    return ctx.drawImage(img, /*Math.round(sx), Math.round(sy), Math.round(sw), Math.round(sh),*/ Math.round(dx), Math.round(dy), Math.round(dw), Math.round(dh) );
   };
 
 
