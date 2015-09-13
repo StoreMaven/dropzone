@@ -334,12 +334,17 @@
         }
       },
       error: function(file, message) {
-        console.log('dropzoneLibrary:error' );
+        console.log('dropzoneLibrary:error', file, message, message.error );
         var node, _i, _len, _ref, _results;
-        if (file.previewElement) {
+        if ( file.previewElement) {
+
           file.previewElement.classList.add("dz-error");
           if (typeof message !== "String" && message.error) {
-            message = message.error;
+            if (typeof message.error !== "String" && message.error.message) {
+              message = message.error.message;
+            }else{
+              message = message.error;
+            }
           }
           _ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
           _results = [];
@@ -583,11 +588,13 @@
             _this.hiddenFileInput.style.width = "0";
             document.body.appendChild(_this.hiddenFileInput);
             return _this.hiddenFileInput.addEventListener("change", function() {
+              console.log('dropzoneLibrary:change event' );
               var file, files, _i, _len;
               files = _this.hiddenFileInput.files;
               if (files.length) {
                 for (_i = 0, _len = files.length; _i < _len; _i++) {
                   file = files[_i];
+                  console.log('dropzoneLibrary:change event file', file.name, file.width, file );
                   _this.addFile(file);
                 }
               }
@@ -673,6 +680,7 @@
             })(this),
             "drop": (function(_this) {
               return function(e) {
+              console.log('dropzoneLibrary:drop ss' );
                 noPropagation(e);
                 return _this.drop(e);
               };
@@ -986,7 +994,7 @@
     };
 
     Dropzone.prototype.addFile = function(file) {
-      console.log('dropzoneLibrary:addFile' );
+      console.log('dropzoneLibrary:addFileee' );
       file.upload = {
         progress: 0,
         total: file.size,
@@ -1113,6 +1121,7 @@
     };
 
     Dropzone.prototype.createThumbnailFromUrl = function(file, imageUrl, callback) {
+      console.log('dropzoneLibrary:createThumbnailFromUrl', file, file.width, imageUrl );
       var img;
       img = document.createElement("img");
       img.onload = (function(_this) {
@@ -1186,12 +1195,17 @@
         this.emit("processingmultiple", files);
       }
 
-      console.log( 'mavenVideoUpload::resolve upload url processFiles' );
+      console.log( 'dropzoneLibrary::processFiles' );
       url = resolveOption(this.options.url, files);
 
       if( typeof url.then === 'function'){
-        url.then( function(){
-          self.uploadFiles(files);
+        url.then( function( error ){
+          console.log( 'dropzoneLibrary::processFiles url resolved', url, file.previewElement.classList.contains("dz-error") );
+          if( !error ){
+            self.uploadFiles(files);
+          }else{
+            self._errorProcessing(files, error, null);
+          }
         } );
 
         return;
@@ -1254,7 +1268,7 @@
     };
 
     Dropzone.prototype.uploadFile = function(file) {
-      console.log( 'mavenVideoUpload::resolve upload url uploadFile' );
+      console.log( 'dropzoneLibrary::resolve upload url uploadFile' );
       return this.uploadFiles([file]);
     };
 
@@ -1271,6 +1285,7 @@
       }
       method = resolveOption(this.options.method, files);
       url = resolveOption(this.options.url, files);
+      console.log( 'dropzoneLibrary::uploadFiles', url );
 
       xhr.open(method, url, true);
       xhr.withCredentials = !!this.options.withCredentials;
@@ -1431,6 +1446,8 @@
 
     Dropzone.prototype._errorProcessing = function(files, message, xhr) {
       var file, _i, _len;
+      console.log('dropzoneLibrary:_errorProcessing', files, message, xhr );
+
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
         file.status = Dropzone.ERROR;
